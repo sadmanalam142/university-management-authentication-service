@@ -1,18 +1,21 @@
-import express, { Application, Request, Response } from 'express'
-import cors from 'cors'
-import usersRouter from './app/modules/users/users.router'
-const app: Application = express()
+import express, { Application } from 'express';
+import cors from 'cors';
+import globalErrorHandler from './app/middlewares/globalErrorHandler';
+import { UserRoutes } from './app/modules/user/user.router';
+const app: Application = express();
 
-app.use(cors())
+app.use(cors());
 
 // parser
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-app.use('/api/v1/users/', usersRouter.router)
+app.use('/api/v1/users/', UserRoutes.router);
 
-app.get('/', (req: Request, res: Response) => {
-  res.send('University Application Running')
-})
+// app.get('/', async (req: Request, res: Response, next: NextFunction) => {
+//   throw new Error('Errorrrrrrrrrrr.......')
+// })
 
-export default app
+app.use(globalErrorHandler);
+
+export default app;
