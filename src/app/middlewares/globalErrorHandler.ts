@@ -9,11 +9,11 @@ import handleZodError from '../../errors/handleZodError';
 
 const globalErrorHandler: ErrorRequestHandler = (error, req, res, next) => {
   config.env === 'development'
-    ? console.log('globalErrorHandler ~~')
+    ? console.log('globalErrorHandler ~~', { error })
     : errorLogger.error('globalErrorHandler ~~', error);
 
   let statusCode = 500;
-  let message = 'Somethng went wrong';
+  let message = 'Somethng went wrong!';
   let errorMessages: IGenericErrorMessage[] = [];
 
   if (error?.name === 'ValidationError') {
@@ -26,7 +26,8 @@ const globalErrorHandler: ErrorRequestHandler = (error, req, res, next) => {
     statusCode = simplifiedError.statusCode;
     message = simplifiedError.message;
     errorMessages = simplifiedError.errorMessages;
-  } else if (error instanceof Error) {
+  } else if (error instanceof ApiError) {
+    statusCode = error?.statusCode;
     message = error?.message;
     errorMessages = error?.message
       ? [
@@ -36,8 +37,7 @@ const globalErrorHandler: ErrorRequestHandler = (error, req, res, next) => {
           },
         ]
       : [];
-  } else if (error instanceof ApiError) {
-    statusCode = error?.statusCode;
+  } else if (error instanceof Error) {
     message = error?.message;
     errorMessages = error?.message
       ? [
