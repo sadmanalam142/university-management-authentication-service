@@ -1,4 +1,5 @@
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
+import { IManagementDepartment } from '../managementDepartment/managementDepartment.interface';
 
 export type UserName = {
   firstName: string;
@@ -9,7 +10,7 @@ export type UserName = {
 export type IAdmin = {
   id: string;
   name: UserName;
-  profileImage: string;
+  profileImage?: string;
   dateOfBirth?: string;
   email: string;
   contactNo: string;
@@ -18,8 +19,20 @@ export type IAdmin = {
   permanentAddress?: string;
   presentAddress?: string;
   bloodGroup?: 'A+' | 'A-' | 'B+' | 'B-' | 'AB+' | 'AB-' | 'O+' | 'O-';
-  // managementDepartment: Types.ObjectId | IManagementDepartment;
+  managementDepartment: Types.ObjectId | IManagementDepartment;
   designation: string;
 };
 
 export type AdminModel = Model<IAdmin>;
+
+export type IAdminFilters = {
+  searchTerm?: string;
+  id?: string;
+  email?: string;
+  contactNo?: string;
+  emergencyContactNo?: string;
+  gender?: 'male' | 'female';
+  bloodGroup?: 'A+' | 'A-' | 'B+' | 'B-' | 'AB+' | 'AB-' | 'O+' | 'O-';
+  managementDepartment?: string;
+  designation?: string;
+};

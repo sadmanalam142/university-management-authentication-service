@@ -6,27 +6,25 @@ import { IPaginationOptions } from '../../../interfaces/pagination';
 import ApiError from '../../../errors/ApiError';
 import httpStatus from 'http-status';
 import { User } from '../user/user.model';
-import { facultySearchableFields } from './faculty.constant';
-import { IFaculty } from './faculty.interface';
-import { Faculty } from './faculty.model';
 import { IStudentFilters } from '../student/student.interface';
+import { adminSearchableFields } from './admin.constant';
+import { IAdmin } from './admin.interface';
+import { Admin } from './admin.model';
 
-const getSingleFaculty = async (id: string): Promise<IFaculty | null> => {
-  const result = await Faculty.findById(id)
-    .populate('academicDepartment')
-    .populate('academicFaculty');
+const getSingleAdmin = async (id: string): Promise<IAdmin | null> => {
+  const result = await Admin.findById(id).populate('managementDepartment');
   return result;
 };
 
-const getAllFaculties = async (
+const getAllAdmins = async (
   filters: IStudentFilters,
   paginationOptions: IPaginationOptions,
-): Promise<IGenericResponse<IFaculty[]>> => {
+): Promise<IGenericResponse<IAdmin[]>> => {
   const { searchTerm, ...filtersData } = filters;
   const andConditions = [];
   if (searchTerm) {
     andConditions.push({
-      $or: facultySearchableFields.map(field => ({
+      $or: adminSearchableFields.map(field => ({
         [field]: {
           $regex: searchTerm,
           $options: 'i',
@@ -49,13 +47,12 @@ const getAllFaculties = async (
   }
   const whereConditions =
     andConditions.length > 0 ? { $and: andConditions } : {};
-  const result = await Faculty.find(whereConditions)
-    .populate('academicDepartment')
-    .populate('academicFaculty')
+  const result = await Admin.find(whereConditions)
+    .populate('managementDepartment')
     .sort(sortConditions)
     .skip(skip)
     .limit(limit);
-  const total = await Faculty.countDocuments(whereConditions);
+  const total = await Admin.countDocuments(whereConditions);
   return {
     meta: {
       page,
@@ -66,40 +63,40 @@ const getAllFaculties = async (
   };
 };
 
-const updateFaculty = async (
+const updateAdmin = async (
   id: string,
-  payload: Partial<IFaculty>,
-): Promise<IFaculty | null> => {
-  const isExist = await Faculty.find({ id });
+  payload: Partial<IAdmin>,
+): Promise<IAdmin | null> => {
+  const isExist = await Admin.find({ id });
   if (!isExist) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Faculty not found');
+    throw new ApiError(httpStatus.NOT_FOUND, 'Admin not found');
   }
-  const { name, ...facultyData } = payload;
-  const updatedFacultyData: Partial<IFaculty> = { ...facultyData };
+  const { name, ...adminData } = payload;
+  const updatedAdminData: Partial<IAdmin> = { ...adminData };
   if (name && Object.keys(name).length > 0) {
     Object.keys(name).forEach(key => {
-      const nameKey = `name.${key}` as keyof Partial<IFaculty>; // `name.fisrtName`
-      (updatedFacultyData as any)[nameKey] = name[key as keyof typeof name];
+      const nameKey = `name.${key}` as keyof Partial<IAdmin>; // `name.fisrtName`
+      (updatedAdminData as any)[nameKey] = name[key as keyof typeof name];
     });
   }
 
-  const result = await Faculty.findOneAndUpdate({ id }, updatedFacultyData, {
+  const result = await Admin.findOneAndUpdate({ id }, updatedAdminData, {
     new: true,
   });
   return result;
 };
 
-const deleteFaculty = async (id: string): Promise<IFaculty | null> => {
-  const isExist = await Faculty.find({ id });
+const deleteAdmin = async (id: string): Promise<IAdmin | null> => {
+  const isExist = await Admin.find({ id });
   if (!isExist) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Faculty not found');
+    throw new ApiError(httpStatus.NOT_FOUND, 'Admin not found');
   }
   const session = await mongoose.startSession();
   try {
     session.startTransaction();
-    const result = await Faculty.findOneAndDelete({ id }, { session });
+    const result = await Admin.findOneAndDelete({ id }, { session });
     if (!result) {
-      throw new ApiError(httpStatus.NOT_FOUND, 'Failed to delete faculty');
+      throw new ApiError(httpStatus.NOT_FOUND, 'Failed to delete admin');
     }
     await User.deleteOne({ id });
     await session.commitTransaction();
@@ -112,9 +109,9 @@ const deleteFaculty = async (id: string): Promise<IFaculty | null> => {
   }
 };
 
-export const FacultyService = {
-  getSingleFaculty,
-  getAllFaculties,
-  updateFaculty,
-  deleteFaculty,
+export const AdminService = {
+  getSingleAdmin,
+  getAllAdmins,
+  updateAdmin,
+  deleteAdmin,
 };

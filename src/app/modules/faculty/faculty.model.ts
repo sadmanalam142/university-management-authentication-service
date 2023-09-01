@@ -1,4 +1,4 @@
-import { Schema, Types, model } from 'mongoose';
+import { Schema, model } from 'mongoose';
 import { FacultyModel, IFaculty } from './faculty.interface';
 import { bloodGroup, gender } from '../student/student.constant';
 
@@ -60,7 +60,7 @@ export const facultySchema = new Schema<IFaculty, FacultyModel>(
       required: true,
     },
     academicDepartment: {
-      type: Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: 'AcademicDepartment',
       required: true,
     },
@@ -73,7 +73,7 @@ export const facultySchema = new Schema<IFaculty, FacultyModel>(
       // required: true,
     },
     academicFaculty: {
-      type: Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: 'AcademicFaculty',
       required: true,
     },
