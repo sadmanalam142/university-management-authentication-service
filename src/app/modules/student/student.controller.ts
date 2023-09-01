@@ -14,7 +14,7 @@ const getSingleStudent = catchAsync(async (req: Request, res: Response) => {
   sendResponse<IStudent>(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Semester retrieved successfully!',
+    message: 'Student retrieved successfully!',
     data: result,
   });
 });
@@ -31,25 +31,25 @@ const getAllStudents = catchAsync(async (req: Request, res: Response) => {
   sendResponse<IStudent[]>(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Semester retrieved successfully!',
+    message: 'Student retrieved successfully!',
     meta: result.meta,
     data: result.data,
   });
 });
 
-// const updateStudent = catchAsync(async (req: Request, res: Response) => {
-//   const id = req.params.id;
-//   const updateData = req.body;
+const updateStudent = catchAsync(async (req: Request, res: Response) => {
+  const id = req.params.id;
+  const updateData = req.body;
 
-//   const result = await StudentService.updateStudent(id, updateData);
+  const result = await StudentService.updateStudent(id, updateData);
 
-//   sendResponse<IStudent>(res, {
-//     statusCode: httpStatus.OK,
-//     success: true,
-//     message: 'Semester updated successfully!',
-//     data: result,
-//   });
-// });
+  sendResponse<IStudent>(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Student updated successfully!',
+    data: result,
+  });
+});
 
 const deleteStudent = catchAsync(async (req: Request, res: Response) => {
   const id = req.params.id;
@@ -59,7 +59,7 @@ const deleteStudent = catchAsync(async (req: Request, res: Response) => {
   sendResponse<IStudent>(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Semester deleted successfully!',
+    message: 'Student deleted successfully! also deleted from user',
     data: result,
   });
 });
@@ -67,6 +67,6 @@ const deleteStudent = catchAsync(async (req: Request, res: Response) => {
 export const StudentController = {
   getSingleStudent,
   getAllStudents,
-  //   updateStudent,
+  updateStudent,
   deleteStudent,
 };

@@ -15,13 +15,13 @@ export const studentSchema = new Schema<IStudent, StudentModel>(
           type: String,
           required: true,
         },
-        lastName: {
-          type: String,
-          required: true,
-        },
         middleName: {
           type: String,
           required: false,
+        },
+        lastName: {
+          type: String,
+          required: true,
         },
       },
       required: true,
