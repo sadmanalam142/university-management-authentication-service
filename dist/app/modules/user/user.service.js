@@ -23,12 +23,14 @@ const http_status_1 = __importDefault(require("http-status"));
 const user_model_1 = require("./user.model");
 const faculty_model_1 = require("../faculty/faculty.model");
 const admin_model_1 = require("../admin/admin.model");
+// import bcrypt from 'bcrypt';
 // creating user and student
 const createStudent = (student, user) => __awaiter(void 0, void 0, void 0, function* () {
     // default password
     if (!user.password) {
         user.password = config_1.default.default_user_pass;
     }
+    // user.password = await bcrypt.hash(user.password, 10);
     user.role = 'student';
     const academicsemester = yield acdemicSemester_model_1.AcademicSemester.findById(student.academicSemester).lean();
     let newUserData = null;

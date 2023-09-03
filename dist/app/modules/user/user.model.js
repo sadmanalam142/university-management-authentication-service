@@ -2,6 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.User = void 0;
 const mongoose_1 = require("mongoose");
+// import bcrypt from 'bcrypt';
+// import config from '../../../config';
 const userSchema = new mongoose_1.Schema({
     id: {
         type: String,
@@ -35,4 +37,11 @@ const userSchema = new mongoose_1.Schema({
         virtuals: true,
     },
 });
+// userSchema.pre('save', async function (next) {
+//   this.password = await bcrypt.hash(
+//     this.password,
+//     Number(config.bcrypt_salt_rounds),
+//   );
+//   next();
+// });
 exports.User = (0, mongoose_1.model)('User', userSchema);
