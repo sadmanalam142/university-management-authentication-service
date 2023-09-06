@@ -12,6 +12,7 @@ const student_route_1 = require("../modules/student/student.route");
 const faculty_route_1 = require("../modules/faculty/faculty.route");
 const managementDepartment_route_1 = require("../modules/managementDepartment/managementDepartment.route");
 const admin_route_1 = require("../modules/admin/admin.route");
+const auth_route_1 = require("../modules/auth/auth.route");
 const router = express_1.default.Router();
 const moduleRoutes = [
     {
@@ -45,6 +46,10 @@ const moduleRoutes = [
     {
         path: '/admins/',
         route: admin_route_1.AdminRoutes.router,
+    },
+    {
+        path: '/auth/',
+        route: auth_route_1.AuthRoutes.router,
     },
 ];
 moduleRoutes.forEach(route => router.use(route.path, route.route));
