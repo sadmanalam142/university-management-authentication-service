@@ -1,4 +1,4 @@
-import jwt, { Secret } from 'jsonwebtoken';
+import jwt, { JwtPayload, Secret } from 'jsonwebtoken';
 
 const createToken = (
   payload: object,
@@ -9,7 +9,11 @@ const createToken = (
     expiresIn: expireTime,
   });
 };
+const verifyToken = (token: string, secret: Secret): JwtPayload => {
+  return jwt.verify(token, secret) as JwtPayload;
+};
 
 export const jwtHelper = {
   createToken,
+  verifyToken,
 };
