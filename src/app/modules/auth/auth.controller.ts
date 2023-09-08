@@ -3,7 +3,11 @@ import catchAsync from '../../../shared/catchAsync';
 import sendResponse from '../../../shared/sendResponse';
 import httpStatus from 'http-status';
 import { AuthService } from './auth.service';
-import { ILoginUserResponse, IRefreshTokenResponse } from './auth.interface';
+import {
+  IChangePassword,
+  ILoginUserResponse,
+  IRefreshTokenResponse,
+} from './auth.interface';
 import config from '../../../config';
 
 const loginUser = catchAsync(async (req: Request, res: Response) => {
@@ -40,12 +44,25 @@ const refreshToken = catchAsync(async (req: Request, res: Response) => {
   sendResponse<IRefreshTokenResponse>(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Login successfull !',
+    message: 'Token updated successfull !',
     data: result,
+  });
+});
+
+const changePassword = catchAsync(async (req: Request, res: Response) => {
+  const user = req.user;
+  const { ...changePasswordData } = req.body;
+  await AuthService.changePassword(user, changePasswordData);
+
+  sendResponse<IChangePassword>(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Password Changed successfully !',
   });
 });
 
 export const AuthController = {
   loginUser,
   refreshToken,
+  changePassword,
 };
