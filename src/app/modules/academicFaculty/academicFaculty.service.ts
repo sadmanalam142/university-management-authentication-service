@@ -3,6 +3,7 @@ import { IGenericResponse } from '../../../interfaces/common';
 import { IPaginationOptions } from '../../../interfaces/pagination';
 import { academicFacultySearchableFields } from './academicFaculty.constant';
 import {
+  AcademicFacultyCreatedEvent,
   IAcademicFaculty,
   IAcademicFacultyFilters,
 } from './academicFaculty.interface';
@@ -84,10 +85,41 @@ const deleteFaculty = async (id: string): Promise<IAcademicFaculty | null> => {
   return result;
 };
 
+const createAcademicFacultyFromEvent = async (
+  e: AcademicFacultyCreatedEvent,
+): Promise<void> => {
+  await AcademicFaculty.create({
+    syncId: e.id,
+    title: e.title,
+  });
+};
+
+const updateAcademicFacultyFromEvent = async (
+  e: AcademicFacultyCreatedEvent,
+): Promise<void> => {
+  await AcademicFaculty.findOneAndUpdate(
+    { syncId: e.id },
+    {
+      $set: {
+        title: e.title,
+      },
+    },
+  );
+};
+
+const deleteAcademicFacultyFromEvent = async (
+  syncId: string,
+): Promise<void> => {
+  await AcademicFaculty.findOneAndDelete({ syncId });
+};
+
 export const academicFacultyService = {
   createFaculty,
   getSingleFaculty,
   getAllFaculty,
   updateFaculty,
   deleteFaculty,
+  createAcademicFacultyFromEvent,
+  updateAcademicFacultyFromEvent,
+  deleteAcademicFacultyFromEvent,
 };

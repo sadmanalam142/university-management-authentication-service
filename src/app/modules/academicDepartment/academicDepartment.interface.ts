@@ -12,3 +12,9 @@ export type IAcademicDepartmentFilters = {
   searchTerm?: string;
   academicFaculty?: Types.ObjectId;
 };
+
+export type AcademicDepartmentCreatedEvent = {
+  id: string;
+  title: string;
+  academicFacultyId: string;
+};

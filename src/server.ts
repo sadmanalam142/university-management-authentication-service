@@ -2,6 +2,8 @@ import mongoose from 'mongoose';
 import config from './config/index';
 import app from './app';
 import { Server } from 'http';
+import { RedisClient } from './shared/redis';
+import subscribeToEvents from './app/events';
 
 process.on('uncaughtException', error => {
   console.log('Uncaught exception is detected.....');
@@ -13,6 +15,10 @@ let server: Server;
 
 async function bootstrap() {
   try {
+    await RedisClient.connect().then(() => {
+      subscribeToEvents();
+    });
+
     await mongoose.connect(config.database_url as string);
     console.log('Database Connected Successfull');
 

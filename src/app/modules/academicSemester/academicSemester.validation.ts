@@ -32,7 +32,7 @@ const updateAcademicSemesterZodSchema = z
         })
         .optional(),
       year: z
-        .string({
+        .number({
           required_error: 'year is required',
         })
         .optional(),
