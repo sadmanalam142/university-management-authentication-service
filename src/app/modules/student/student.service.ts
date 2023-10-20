@@ -4,11 +4,16 @@ import { IGenericResponse } from '../../../interfaces/common';
 import { IStudent, IStudentFilters } from './student.interface';
 import { Student } from './student.model';
 import { paginationHelpers } from '../../../helpers/paginationHelpers';
-import { studentSearchableFields } from './student.constant';
+import {
+  EVENT_STUDENT_DELETED,
+  EVENT_STUDENT_UPDATED,
+  studentSearchableFields,
+} from './student.constant';
 import { IPaginationOptions } from '../../../interfaces/pagination';
 import ApiError from '../../../errors/ApiError';
 import httpStatus from 'http-status';
 import { User } from '../user/user.model';
+import { RedisClient } from '../../../shared/redis';
 
 const getSingleStudent = async (id: string): Promise<IStudent | null> => {
   const result = await Student.findById(id)
@@ -101,7 +106,19 @@ const updateStudent = async (
   }
   const result = await Student.findOneAndUpdate({ id }, updatedStudentData, {
     new: true,
-  });
+  })
+    .populate('academicFaculty')
+    .populate('academicDepartment')
+    .populate('academicSemester');
+
+  try {
+    if (result) {
+      await RedisClient.publish(EVENT_STUDENT_UPDATED, JSON.stringify(result));
+    }
+  } catch (error) {
+    console.error('Error publishing to Redis:', error);
+  }
+
   return result;
 };
 
@@ -120,6 +137,18 @@ const deleteStudent = async (id: string): Promise<IStudent | null> => {
     await User.deleteOne({ id });
     await session.commitTransaction();
     await session.endSession();
+
+    try {
+      if (result) {
+        await RedisClient.publish(
+          EVENT_STUDENT_DELETED,
+          JSON.stringify(result),
+        );
+      }
+    } catch (error) {
+      console.error('Error publishing to Redis:', error);
+    }
+
     return result;
   } catch (error) {
     await session.abortTransaction();

@@ -9,6 +9,7 @@ import {
   IAcademicDepartmentFilters,
 } from './academicDepartment.interface';
 import { AcademicDepartment } from './academicDepartment.model';
+import { AcademicFaculty } from '../academicFaculty/academicFaculty.model';
 
 const createDepartment = async (
   payload: IAcademicDepartment,
@@ -99,7 +100,7 @@ const deleteDepartment = async (
 const createAcademicDepartmentFromEvent = async (
   e: AcademicDepartmentCreatedEvent,
 ): Promise<void> => {
-  const academicFaculty = await AcademicDepartment.findOne({
+  const academicFaculty = await AcademicFaculty.findOne({
     syncId: e.academicFacultyId,
   });
   const payload = {
@@ -114,7 +115,7 @@ const createAcademicDepartmentFromEvent = async (
 const updatAcademicDepartmentFromEvent = async (
   e: AcademicDepartmentCreatedEvent,
 ): Promise<void> => {
-  const academicFaculty = await AcademicDepartment.findOne({
+  const academicFaculty = await AcademicFaculty.findOne({
     syncId: e.academicFacultyId,
   });
   const payload = {

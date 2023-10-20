@@ -11,6 +11,10 @@ const academicFacultySchema = new Schema<IAcademicFaculty>(
       unique: true,
       required: true,
     },
+    syncId: {
+      type: String,
+      required: true,
+    },
   },
   {
     timestamps: true,

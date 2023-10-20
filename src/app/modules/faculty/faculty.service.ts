@@ -6,10 +6,15 @@ import { IPaginationOptions } from '../../../interfaces/pagination';
 import ApiError from '../../../errors/ApiError';
 import httpStatus from 'http-status';
 import { User } from '../user/user.model';
-import { facultySearchableFields } from './faculty.constant';
+import {
+  EVENT_FACULTY_DELETED,
+  EVENT_FACULTY_UPDATED,
+  facultySearchableFields,
+} from './faculty.constant';
 import { IFaculty } from './faculty.interface';
 import { Faculty } from './faculty.model';
 import { IStudentFilters } from '../student/student.interface';
+import { RedisClient } from '../../../shared/redis';
 
 const getSingleFaculty = async (id: string): Promise<IFaculty | null> => {
   const result = await Faculty.findById(id)
@@ -85,7 +90,18 @@ const updateFaculty = async (
 
   const result = await Faculty.findOneAndUpdate({ id }, updatedFacultyData, {
     new: true,
-  });
+  })
+    .populate('academicDepartment')
+    .populate('academicFaculty');
+
+  try {
+    if (result) {
+      await RedisClient.publish(EVENT_FACULTY_UPDATED, JSON.stringify(result));
+    }
+  } catch (error) {
+    console.error('Error publishing to Redis:', error);
+  }
+
   return result;
 };
 
@@ -104,6 +120,18 @@ const deleteFaculty = async (id: string): Promise<IFaculty | null> => {
     await User.deleteOne({ id });
     await session.commitTransaction();
     await session.endSession();
+
+    try {
+      if (result) {
+        await RedisClient.publish(
+          EVENT_FACULTY_DELETED,
+          JSON.stringify(result),
+        );
+      }
+    } catch (error) {
+      console.error('Error publishing to Redis:', error);
+    }
+
     return result;
   } catch (error) {
     await session.abortTransaction();

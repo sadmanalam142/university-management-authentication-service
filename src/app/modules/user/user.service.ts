@@ -17,6 +17,8 @@ import { IFaculty } from '../faculty/faculty.interface';
 import { Faculty } from '../faculty/faculty.model';
 import { IAdmin } from '../admin/admin.interface';
 import { Admin } from '../admin/admin.model';
+import { RedisClient } from '../../../shared/redis';
+import { EVENT_FACULTY_CREATED, EVENT_STUDENT_CREATED } from './user.const';
 
 // creating user and student
 const createStudent = async (
@@ -76,6 +78,17 @@ const createStudent = async (
     });
   }
 
+  try {
+    if (newUserData) {
+      await RedisClient.publish(
+        EVENT_STUDENT_CREATED,
+        JSON.stringify(newUserData.student),
+      );
+    }
+  } catch (error) {
+    console.error('Error publishing to Redis:', error);
+  }
+
   return newUserData;
 };
 
@@ -128,6 +141,17 @@ const createFaculty = async (
         },
       ],
     });
+  }
+
+  try {
+    if (newUserData) {
+      await RedisClient.publish(
+        EVENT_FACULTY_CREATED,
+        JSON.stringify(newUserData.faculty),
+      );
+    }
+  } catch (error) {
+    console.error('Error publishing to Redis:', error);
   }
 
   return newUserData;

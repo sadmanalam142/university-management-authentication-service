@@ -10,10 +10,8 @@ import { AcademicSemesterService } from './academicSemester.service';
 const initAcademicSemesterEvents = () => {
   RedisClient.subscribe(EVENT_ACADEMIC_SEMESTER_CREATED, async (e: string) => {
     const data: IAcademicSemesterCreatedEvent = JSON.parse(e);
-    console.log(data);
 
     await AcademicSemesterService.createAcademicSemesterFromEvent(data);
-    console.log(data);
   });
 
   RedisClient.subscribe(EVENT_ACADEMIC_SEMESTER_UPDATED, async (e: string) => {
